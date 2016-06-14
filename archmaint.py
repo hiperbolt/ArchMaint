@@ -2,9 +2,73 @@ from tkinter import *
 from tkinter import messagebox
 from sys import exit
 from subprocess import *
-import os
+import shutil
+import  os
+
+'''
+This program was created by hiperbolt (tomasimoes03@gmail.com / hiperbolt.wordpress.com) and implements rmshit.py by Jakub Klinkovský (lahwaacz).
+'''
 
 __author__ = 'hiperbolt'
+
+shittyfiles = [
+    '~/.adobe',              # Flash crap
+    '~/.macromedia',         # Flash crap
+    '~/.recently-used',
+    '~/.local/share/recently-used.xbel',
+    '~/Desktop',             # Firefox creates this
+    '~/.thumbnails',
+    '~/.gconfd',
+    '~/.gconf',
+    '~/.local/share/gegl-0.2',
+    '~/.FRD/log/app.log',   # FRD
+    '~/.FRD/links.txt',     # FRD
+    '~/.objectdb',          # FRD
+    '~/.gstreamer-0.10',
+    '~/.pulse',
+    '~/.esd_auth',
+    '~/.config/enchant',
+    '~/.spicec',            # contains only log file; unconfigurable
+    '~/.dropbox-dist',
+    '~/.parallel',
+    '~/.dbus',
+    '~/ca2',                # WTF?
+    '~/ca2~',               # WTF?
+    '~/.distlib/',          # contains another empty dir, don't know which software creates it
+    '~/.bazaar/',           # bzr insists on creating files holding default values
+    '~/.bzr.log',
+    '~/.nv/',
+    '~/.viminfo',           # configured to be moved to ~/.cache/vim/viminfo, but it is still sometimes created...
+    '~/.npm/',              # npm cache
+]
+
+def yesno():
+    return True
+
+
+def rmshit():
+    print("Found shittyfiles:")
+    found = []
+    for f in shittyfiles:
+        absf = os.path.expanduser(f)
+        if os.path.exists(absf):
+            found.append(absf)
+            print("    %s" % f)
+
+    if len(found) == 0:
+        print("No shitty files found :)")
+        return
+
+    if yesno():
+        for f in found:
+            if os.path.isfile(f):
+                os.remove(f)
+            else:
+                shutil.rmtree(f)
+        print("All cleaned")
+    else:
+        print("No file removed")
+
 
 class RootWindow:
     def __init__(self, window):
@@ -80,12 +144,7 @@ class RootWindow:
             messagebox.showinfo('Success', 'Broken Symlinks Cleared.')
 
     def cleartemps(self):
-        try:
-            check_call('python rmshit.py', shell=True)
-        except CalledProcessError:
-            messagebox.showerror('Error', 'An error occurred, that is all we know.')
-        else:
-            messagebox.showinfo('Success', 'TempFiles deleted, thanks rmshit.py!')
+        rmshit()
 
 if __name__ == '__main__':
     root = Tk()
